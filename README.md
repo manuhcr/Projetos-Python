@@ -110,11 +110,7 @@ Projetos-Python/
 
 ---
 
-# 📸 Preview
 
-> Adicione prints dos projetos aqui futuramente.
-
----
 
 # 🔥 Atualizações Automáticas do README
 
