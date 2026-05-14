@@ -18,18 +18,18 @@ host = 'localhost'
 port = 3306
 
 # Nome do banco de dados
-name_bench = 'geo_db'
+nameBench = 'geo_db'
 
 # Caminho onde arquivos SQL podem ser exportados
 # O "r" evita problemas com barras "\" do Windows
-way_export_sql = r'C:\Users\edgle\OneDrive\Documentos\GitHub\Projetos-Python\Combobox Dependente'
+wayExportSql = r'C:\Users\edgle\OneDrive\Documentos\GitHub\Projetos-Python\Combobox Dependente'
 
 
 # ==============================
 # FUNÇÃO DE CONEXÃO
 # ==============================
 
-# Cria uma função chamada get_conn
+# Cria uma função chamada getConn
 #
 # Essa função serve para abrir uma conexão com o MySQL
 #
@@ -69,10 +69,10 @@ way_export_sql = r'C:\Users\edgle\OneDrive\Documentos\GitHub\Projetos-Python\Com
 #
 # Exemplo:
 #
-# conn = get_conn()
+# conn = getConn()
 #
 # Agora "conn" é uma conexão MySQL pronta
-def get_conn(bench: str | None = None) -> pymysql.connections.Connection:
+def getConn(bench: str | None = None) -> pymysql.connections.Connection:
 
     # Cria conexão com o servidor MySQL
     conn = pymysql.connect(
@@ -99,10 +99,10 @@ def get_conn(bench: str | None = None) -> pymysql.connections.Connection:
         #
         # Exemplo:
         #
-        # get_conn("geo_db")
+        # getConn("geo_db")
         # → conecta usando geo_db
         #
-        # get_conn()
+        # getConn()
         # → conecta sem selecionar banco
         database=bench if bench else None,
 
