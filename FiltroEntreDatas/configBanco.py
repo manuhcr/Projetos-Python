@@ -16,8 +16,7 @@ porta = 3306
 nomeBanco = 'agendaDatasBrDb'
 
 # Pasta onde serão salvos os arquivos SQL exportados
-caminhoExportarSQL = r'C:\Users\manoe\PycharmProjects\Projetos-Python\FiltroEntreDatas\SQLDumps'
-
+caminhoExportarSQL = r'C:\Users\manoe\PycharmProjects\Projetos-Python\SQLDump'
 
 def obterConexao(banco: str | None = None) -> pymysql.connections.Connection:
     """
