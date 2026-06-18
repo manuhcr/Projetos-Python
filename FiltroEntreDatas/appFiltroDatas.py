@@ -87,7 +87,7 @@ class AppFiltroEntreDatas(tk.Tk):
         # existentes e preenche os componentes visuais da interface.
         # Dessa forma, o usuário já visualiza as informações
         # mais recentes ao abrir o sistema.
-        self.atualizar()
+        self.atualizarTabelaEvento()
 
     # Método responsável por centralizar a janela
     # no centro da tela do usuário.
@@ -178,11 +178,16 @@ class AppFiltroEntreDatas(tk.Tk):
     #    Exibe a tabela de eventos e o formulário de cadastro,
     #    alteração e exclusão.
     def montarLayoutUI(self):
-        # Cria um LabelFrame para agrupar visualmente os
-        # componentes responsáveis pelos filtros de pesquisa.
+        # Cria uma área visual com borda e título para agrupar
+        # os componentes relacionados aos filtros de pesquisa.
         #
-        # O texto informado será exibido na borda superior
-        # do frame, identificando sua finalidade.
+        # self:
+        #     Indica que o LabelFrame será criado dentro da
+        #     janela principal da aplicação.
+        #
+        # text:
+        #     Define o título exibido na borda superior do frame,
+        #     ajudando o usuário a identificar sua finalidade.
         frameFiltro = tk.LabelFrame(
             self,
             text="Filtro entre datas (data inicial / data final / texto na descrição)"
@@ -190,38 +195,94 @@ class AppFiltroEntreDatas(tk.Tk):
 
         # Exibe o frame na janela principal.
         #
-        # fill="x" faz com que o frame ocupe toda a largura disponível.
-        # padx e pady adicionam espaçamento externo.
+        # fill="x":
+        #     Faz o frame ocupar toda a largura disponível
+        #     da janela, acompanhando redimensionamentos.
+        #
+        # padx=10:
+        #     Adiciona 10 pixels de espaço externo nas laterais.
+        #
+        # pady=10:
+        #     Adiciona 10 pixels de espaço externo acima e abaixo.
         frameFiltro.pack(
             fill="x",
             padx=10,
             pady=10
         )
-
-        # Cria o rótulo que identifica o campo
-        # onde o usuário informará a data inicial.
+        # Cria um texto fixo na tela para informar ao usuário
+        # qual informação deve ser digitada no campo ao lado.
+        #
+        # frameFiltro:
+        #     Define que o rótulo será exibido dentro do frame de filtros.
+        #
+        # text:
+        #     Conteúdo textual que será exibido ao usuário.
+        # grid:
+        # Posiciona o componente utilizando uma grade semelhante a uma planilha de Excel.
+        #
+        # row=0:
+        #     Primeira linha da grade.
+        #
+        # column=0:
+        #     Primeira coluna da grade.
+        #
+        # padx=6 e pady=6:
+        # Espaçamento externo para melhorar a organização visual.
+        #
+        # sticky="w":
+        #     Alinha o componente à esquerda da célula.
         ttk.Label(
             frameFiltro,
-            text="Data Inicial"
-        ).grid(
-            row=0,
-            column=0,
-            padx=6,
-            pady=6,
-            sticky="w"
+            text="Data Inicial").grid(
+         row=0,
+         column=0,
+         padx=6,
+         pady=6,
+         sticky="w"
         )
 
-        # Campo utilizado para digitação da data inicial.
+        # Cria um campo de texto onde o usuário poderá
+        # digitar a data inicial do filtro.
         #
-        # O valor digitado será armazenado na variável
-        # self.varDataIni através do mecanismo textvariable.
+        # frameFiltro:
+        #     Frame que conterá o campo.
+        #
+        # textvariable=self.varDataIni:
+        #     Conecta o campo à variável varDataIni.
+        #     Tudo que o usuário digitar será armazenado nela.
+        #
+        # width=14:
+        #     Define aproximadamente a quantidade de caracteres
+        #     visíveis no campo.
         insereDataIni = tk.Entry(
             frameFiltro,
             textvariable=self.varDataIni,
-            width=16
+            width=14
         )
 
-        # Posiciona o campo na grade do frame.
+        # Posiciona o campo de data inicial dentro do frame
+        # utilizando o gerenciador de layout grid().
+        #
+        # row=0:
+        #     Coloca o campo na primeira linha da grade.
+        #
+        # column=1:
+        #     Coloca o campo na segunda coluna da grade.
+        #     A coluna 0 já está sendo utilizada pelo Label
+        #     "Data Inicial".
+        #
+        # padx=6:
+        #     Adiciona um espaçamento externo horizontal de
+        #     6 pixels nas laterais do componente.
+        #
+        # pady=6:
+        #     Adiciona um espaçamento externo vertical de
+        #     6 pixels acima e abaixo do componente.
+        #
+        # sticky="w":
+        #     Alinha o campo à esquerda da célula da grade.
+        #     O "w" significa West (Oeste), que no Tkinter
+        #     representa o lado esquerdo.
         insereDataIni.grid(
             row=0,
             column=1,
@@ -229,84 +290,163 @@ class AppFiltroEntreDatas(tk.Tk):
             pady=6,
             sticky="w"
         )
-
-        # Rótulo responsável por identificar o campo
-        # de data final.
+        # Cria um rótulo (texto fixo) para identificar
+        # o campo onde o usuário deverá informar a data final
+        # utilizada no filtro de pesquisa.
         ttk.Label(
             frameFiltro,
             text="Data Final"
         ).grid(
+
+            # Primeira linha da grade.
             row=0,
+
+            # Terceira coluna da grade.
+            # As colunas 0 e 1 já estão sendo utilizadas
+            # pelo rótulo e pelo campo da data inicial.
             column=2,
+
+            # Espaçamento externo horizontal.
             padx=6,
+
+            # Espaçamento externo vertical.
             pady=6
         )
 
-        # Campo utilizado para digitação da data final.
+        # Cria um campo de texto onde o usuário poderá
+        # digitar a data final do filtro.
         #
-        # O conteúdo digitado será armazenado
-        # na variável self.varDataFim.
+        # textvariable=self.varDataFim:
+        #     Vincula o conteúdo digitado à variável
+        #     self.varDataFim, permitindo acessar o valor
+        #     posteriormente através do método get().
+        #
+        # width=14:
+        #     Define a largura aproximada do campo em caracteres.
+        #     Esse tamanho é suficiente para exibir datas no
+        #     formato dd/mm/aaaa.
         insereDataFim = tk.Entry(
             frameFiltro,
-            textvariable=self.varDataFim
+            textvariable=self.varDataFim,
+            width=14
         )
 
+        # Posiciona o campo de data final ao lado do rótulo.
         insereDataFim.grid(
+
+            # Primeira linha da grade.
             row=0,
+
+            # Quarta coluna da grade.
+            # Fica logo após o rótulo "Data Final".
             column=3,
+
+            # Espaçamento externo horizontal.
             padx=6,
+
+            # Espaçamento externo vertical.
             pady=6,
+
+            # Alinha o campo à esquerda da célula.
+            # "w" significa West (Oeste).
             sticky="w"
         )
 
-        # Rótulo responsável por identificar o campo
-        # utilizado para pesquisa textual.
+        # Cria um rótulo para identificar o campo de
+        # pesquisa por descrição.
+        #
+        # O usuário poderá digitar palavras ou trechos
+        # de texto para localizar eventos específicos.
         ttk.Label(
             frameFiltro,
             text="Descrição"
         ).grid(
+
+            # Primeira linha da grade.
             row=0,
+
+            # Quinta coluna da grade.
             column=4,
+
+            # Espaçamentos externos.
             padx=6,
             pady=6,
+
+            # Mantém o texto alinhado à esquerda.
             sticky="w"
         )
 
-        # Campo onde o usuário poderá informar parte
-        # da descrição do evento para realizar pesquisas.
+        # Cria o campo utilizado para pesquisar eventos
+        # através de palavras presentes na descrição.
         #
         # Exemplo:
         # "Python"
         # "Workshop"
-        # "Relatório"
+        # "Reunião"
         #
-        # O sistema utilizará esse valor para filtrar
-        # os registros exibidos na tabela.
+        # textvariable=self.varTexto:
+        #     Armazena automaticamente o texto digitado
+        #     pelo usuário na variável self.varTexto.
+        #
+        # width=40:
+        #     Define uma largura maior para facilitar a
+        #     digitação de descrições mais longas.
         insereDescricaoFiltro = tk.Entry(
             frameFiltro,
-            textvariable=self.varTexto
+            textvariable=self.varTexto,
+            width=40
         )
 
+        # Posiciona o campo de descrição ao lado do
+        # rótulo "Descrição".
         insereDescricaoFiltro.grid(
+
+            # Primeira linha da grade.
             row=0,
+
+            # Sexta coluna da grade.
             column=5,
+
+            # Espaçamentos externos.
             padx=6,
             pady=6,
+
+            # Mantém o campo alinhado à esquerda.
             sticky="w"
         )
 
-        # Botão responsável por aplicar os filtros
-        # preenchidos pelo usuário.
+        # Cria um botão que executará a pesquisa dos eventos.
         #
-        # Ao ser clicado, executa o método atualizar(),
-        # que realiza uma nova consulta ao banco de dados
-        # utilizando os critérios informados.
+        # text:
+        #     Texto exibido no botão.
+        #
+        # command=self.atualizarTabelaEvento:
+        #     Define qual método será executado quando
+        #     o usuário clicar no botão.
+        #
+        # width=22:
+        #     Largura aproximada do botão em caracteres.
         btnAplicar = ttk.Button(
             frameFiltro,
             text="Aplicar Filtro",
-            command=self.atualizar
+            command=self.atualizarTabelaEvento,
+            width=22
         )
 
+        # Posiciona o botão "Aplicar Filtro" na grade do frame.
+        #
+        # row=0:
+        #     Primeira linha da grade.
+        #
+        # column=6:
+        #     Sétima coluna da grade. O botão é exibido após
+        #     os campos de data inicial, data final e descrição.
+        #
+        # padx=6:
+        #     Adiciona espaçamento horizontal externo.
+        #
+        # pady=6:
+        #     Adiciona espaçamento vertical externo.
         btnAplicar.grid(
             row=0,
             column=6,
@@ -322,9 +462,24 @@ class AppFiltroEntreDatas(tk.Tk):
         btnLimpar = ttk.Button(
             frameFiltro,
             text="Limpar Filtros",
-            command=self.limpaFiltro
+            command=self.limpaFiltro,
+            width=22
         )
 
+        # Posiciona o botão "Limpar Filtros" na grade do frame.
+        #
+        # row=0:
+        #     Primeira linha da grade.
+        #
+        # column=7:
+        #     Oitáva coluna da grade. O botão é exibido após
+        #     os campos de data inicial, data final e descrição.
+        #
+        # padx=6:
+        #     Adiciona espaçamento horizontal externo.
+        #
+        # pady=6:
+        #     Adiciona espaçamento vertical externo.
         btnLimpar.grid(
             row=0,
             column=7,
@@ -332,13 +487,30 @@ class AppFiltroEntreDatas(tk.Tk):
             pady=6
         )
 
-        # Cria o frame central da aplicação.
+        # Cria um Frame que servirá como contêiner principal
+        # da área central da aplicação.
         #
-        # Este frame servirá como contêiner para:
-        # - Tabela de eventos
-        # - Formulário de cadastro
+        # Um Frame funciona como uma "caixa organizadora",
+        # permitindo agrupar e posicionar outros componentes.
+        #
+        # Neste caso, ele armazenará:
+        # - A tabela de eventos;
+        # - O formulário de cadastro, alteração e exclusão.
         frameCentro = ttk.Frame(self)
 
+        # Exibe o frame central na janela principal.
+        #
+        # fill="both":
+        #     Faz o frame ocupar toda a largura e altura
+        #     disponíveis na janela.
+        #
+        # expand=True:
+        #     Permite que o frame aumente de tamanho quando
+        #     a janela for redimensionada.
+        #
+        # padx=10 e pady=5:
+        #     Adicionam espaçamentos externos para melhorar
+        #     a organização visual da interface.
         frameCentro.pack(
             fill="both",
             expand=True,
@@ -346,32 +518,63 @@ class AppFiltroEntreDatas(tk.Tk):
             pady=5
         )
 
-        # Cria o frame responsável por exibir os eventos
-        # retornados pela consulta.
+        # Cria uma área com borda e título para exibir
+        # os eventos retornados pela consulta.
+        #
+        # O LabelFrame ajuda a separar visualmente a
+        # tabela das demais áreas da aplicação.
+        #
+        # text:
+        #     Texto exibido na borda superior do componente.
         frameTabela = ttk.LabelFrame(
             frameCentro,
             text="Eventos (conforme os filtros)"
         )
 
+        # Posiciona o frame da tabela no lado esquerdo
+        # da área central da aplicação.
+        #
+        # side="left":
+        #     Mantém a tabela à esquerda do formulário.
+        #
+        # fill="both":
+        #     Faz o frame ocupar toda a largura e altura
+        #     disponíveis na região onde foi inserido.
+        #
+        # expand=True:
+        #     Permite que a tabela cresça quando houver
+        #     espaço livre na janela.
         frameTabela.pack(
             side="left",
             fill="both",
-            padx=(0, 8)
+            expand=True
         )
 
-        # Define os identificadores das colunas
-        # utilizadas pela Treeview.
+        # Define os identificadores internos das colunas
+        # que serão utilizadas pela Treeview.
+        #
+        # Esses nomes não são necessariamente exibidos
+        # ao usuário, mas são utilizados pelo Tkinter
+        # para identificar cada coluna da tabela.
         colunas = (
             "id",
             "dataEvento",
             "descricao"
         )
 
-        # Cria a tabela responsável por exibir os eventos.
+        # Cria uma tabela para exibir os eventos
+        # retornados pelo banco de dados.
         #
-        # A Treeview funciona como uma grade de dados,
-        # semelhante a uma tabela encontrada em sistemas
-        # desktop tradicionais.
+        # columns=colunas:
+        #     Define quais colunas existirão na tabela.
+        #
+        # show="headings":
+        #     Exibe apenas os cabeçalhos e os dados,
+        #     ocultando a coluna de árvore padrão.
+        #
+        # height=18:
+        #     Define a quantidade aproximada de linhas
+        #     visíveis simultaneamente.
         self.tree = ttk.Treeview(
             frameTabela,
             columns=colunas,
@@ -385,13 +588,37 @@ class AppFiltroEntreDatas(tk.Tk):
         self.tree.heading("dataEvento", text="Data do evento")
         self.tree.heading("descricao", text="Descrição do evento")
 
-        # Configura largura e alinhamento visual
-        # das colunas da tabela.
+        # Configura a aparência da coluna de descrição.
+        #
+        # width=250:
+        #     Define a largura da coluna em pixels.
+        #
+        # anchor="w":
+        #     Alinha o conteúdo à esquerda da célula.
+        #     "w" significa West (Oeste).
+        #     "center" significa centro.
+        self.tree.column(
+            "descricao",
+            width=250,
+            anchor="w"
+        )
         self.tree.column("id", width=60, anchor="center")
         self.tree.column("dataEvento", width=120, anchor="center")
-        self.tree.column("descricao", width=120, anchor="w")
+        self.tree.column("descricao", width=250, anchor="w")
 
-        # Exibe a tabela dentro do frame.
+        # Exibe a Treeview dentro do frame da tabela.
+        #
+        # fill="both":
+        #     Faz a tabela ocupar todo o espaço disponível
+        #     tanto na largura quanto na altura do frame.
+        #
+        # expand=True:
+        #     Permite que a tabela aumente ou diminua de tamanho
+        #     automaticamente quando a janela for redimensionada,
+        #     aproveitando todo o espaço disponível.
+        #
+        # Sem essas configurações, a Treeview ocuparia apenas
+        # o tamanho mínimo necessário para exibir seu conteúdo.
         self.tree.pack(
             fill="both",
             expand=True
@@ -400,28 +627,58 @@ class AppFiltroEntreDatas(tk.Tk):
         # Associa o evento de seleção de linha ao método
         # capturaSelecao().
         #
-        # Sempre que o usuário selecionar um registro,
-        # esse método será executado automaticamente.
+        # Sempre que o usuário clicar em um registro da
+        # tabela, o método será executado automaticamente,
+        # carregando os dados do evento para o formulário.
         self.tree.bind(
             "<<TreeviewSelect>>",
             self.capturaSelecao
         )
 
-        # Cria uma barra de rolagem vertical.
+        # Cria uma barra de rolagem vertical que será utilizada
+        # para navegar pelos registros da tabela quando a quantidade
+        # de eventos ultrapassar o espaço visível da Treeview.
         #
-        # Ela será utilizada quando a quantidade de eventos
-        # ultrapassar o espaço visível da tabela.
+        # frameTabela:
+        #     Define que a barra será exibida dentro do frame
+        #     que contém a tabela.
+        #
+        # orient="vertical":
+        #     Indica que a barra de rolagem será exibida na vertical.
+        #
+        # command=self.tree.yview:
+        #     Conecta a barra de rolagem à movimentação vertical
+        #     da Treeview. Quando o usuário movimentar a barra,
+        #     a tabela também será movimentada.
         bsv = ttk.Scrollbar(
             frameTabela,
             orient="vertical",
             command=self.tree.yview
         )
-
-        # Vincula a barra de rolagem à tabela.
+        # Conecta a Treeview à barra de rolagem vertical.
+        #
+        # yscrollcommand=bsv.set:
+        #     Sempre que a posição da tabela mudar,
+        #     o método set() da Scrollbar será chamado
+        #     automaticamente para atualizar a posição
+        #     visual da barra.
+        #
+        # Dessa forma, a barra acompanha a movimentação
+        # da tabela e permanece sincronizada com os dados
+        # exibidos na tela.
         self.tree.configure(
             yscrollcommand=bsv.set
         )
 
+        # Exibe a barra de rolagem na interface.
+        #
+        # side="right":
+        #     Posiciona a barra no lado direito do frame
+        #     que contém a tabela.
+        #
+        # fill="y":
+        #     Faz a barra ocupar toda a altura disponível
+        #     do frame, acompanhando o tamanho da Treeview.
         bsv.pack(
             side="right",
             fill="y"
@@ -438,27 +695,60 @@ class AppFiltroEntreDatas(tk.Tk):
             text="Cadastrar Evento / Alterar Evento / Excluir Evento"
         )
 
-        # Posiciona o formulário no lado direito da tela.
+        # Exibe o frame do formulário dentro do frame central.
         #
-        # side="right" posiciona o componente à direita.
-        # fill="y" faz o frame ocupar toda a altura disponível.
-        # padx adiciona espaçamento externo.
+        # side="right":
+        #     Posiciona o formulário no lado direito da tela,
+        #     deixando a tabela de eventos no lado esquerdo.
+        #
+        # fill="y":
+        #     Faz o frame ocupar toda a altura disponível
+        #     do contêiner onde está inserido.
+        #
+        # padx=(8, 0):
+        #     Adiciona um espaçamento externo de 8 pixels
+        #     à esquerda do formulário e 0 pixels à direita.
+        #     Isso evita que o formulário fique encostado
+        #     na tabela.
         frameFormulario.pack(
             side="right",
             fill="y",
             padx=(8, 0)
         )
 
-        # Cria um rótulo para identificar o campo
-        # onde será informada a descrição do evento.
+        # Cria um rótulo (Label) para identificar o campo
+        # onde o usuário deverá informar a descrição do evento.
+        #
+        # frameFormulario:
+        #     Define que o rótulo será exibido dentro do
+        #     formulário de cadastro.
+        #
+        # text="Descrição:":
+        #     Texto exibido ao usuário para indicar
+        #     qual informação deve ser preenchida.
         ttk.Label(
             frameFormulario,
             text="Descrição:"
         ).grid(
+
+            # Primeira linha da grade do formulário.
             row=0,
+
+            # Primeira coluna da grade.
             column=0,
+
+            # Espaçamento externo horizontal de 6 pixels.
             padx=6,
-            pady=(10, 6)
+
+            # Espaçamento externo vertical de 6 pixels.
+            pady=6,
+
+            # Mantém o texto alinhado à esquerda da célula.
+            #
+            # "w" significa West (Oeste), que representa
+            # o lado esquerdo no sistema de posicionamento
+            # utilizado pelo Tkinter.
+            sticky="w"
         )
 
         # Campo utilizado para digitação da descrição do evento.
@@ -476,7 +766,23 @@ class AppFiltroEntreDatas(tk.Tk):
             width=36
         )
 
-        # Posiciona o campo ao lado do rótulo.
+        # Posiciona o campo de descrição ao lado do rótulo.
+        #
+        # row=0:
+        #     Primeira linha da grade.
+        #
+        # column=1:
+        #     Segunda coluna da grade. A primeira coluna
+        #     já está ocupada pelo Label "Descrição".
+        #
+        # padx=6:
+        #     Espaçamento horizontal externo.
+        #
+        # pady=(10, 6):
+        #     Adiciona 10 pixels acima e 6 pixels abaixo.
+        #
+        # sticky="w":
+        #     Mantém o campo alinhado à esquerda da célula.
         insereDescricao.grid(
             row=0,
             column=1,
@@ -513,7 +819,17 @@ class AppFiltroEntreDatas(tk.Tk):
             width=16
         )
 
-        # Posiciona o campo de data no formulário.
+        # Posiciona o campo de data ao lado do rótulo
+        # "Data do evento".
+        #
+        # row=1:
+        #     Segunda linha da grade.
+        #
+        # column=1:
+        #     Segunda coluna da grade.
+        #
+        # sticky="w":
+        #     Mantém o campo alinhado à esquerda.
         insereData.grid(
             row=1,
             column=1,
@@ -522,10 +838,19 @@ class AppFiltroEntreDatas(tk.Tk):
             sticky="w"
         )
 
-        # Cria uma linha separadora horizontal.
+        # Cria uma linha horizontal utilizada apenas para
+        # melhorar a organização visual da interface.
         #
-        # Sua função é apenas visual, ajudando a separar
-        # os campos de entrada dos botões de ação.
+        # row=2:
+        #     Terceira linha da grade.
+        #
+        # columnspan=2:
+        #     Faz a linha ocupar duas colunas da grade,
+        #     atravessando toda a largura do formulário.
+        #
+        # sticky="ew":
+        #     Faz a linha se estender da esquerda (west)
+        #     para a direita (east), ocupando toda a célula.
         ttk.Separator(frameFormulario).grid(
             row=2,
             column=0,
@@ -535,41 +860,70 @@ class AppFiltroEntreDatas(tk.Tk):
             sticky="ew"
         )
 
-        # Cria o botão responsável pelo cadastro
-        # de novos eventos no banco de dados.
+        # Cria um botão responsável por cadastrar
+        # um novo evento no banco de dados.
         #
-        # Quando clicado, executa o método
-        # self.cadastraEvento().
+        # text:
+        #     Texto exibido ao usuário.
+        #
+        # command=self.cadastraEvento:
+        #     Método executado quando o botão for clicado.
+        #     Esse método valida os dados e realiza o cadastro.
         btnCadastrar = ttk.Button(
             frameFormulario,
             text="Cadastrar Evento",
             command=self.cadastraEvento
         )
 
+        # Posiciona o botão de cadastro.
+        #
+        # row=3:
+        #     Quarta linha da grade.
+        #
+        # columnspan=2:
+        #     Faz o botão ocupar as duas colunas
+        #     do formulário.
+        #
+        # sticky="ew":
+        #     Faz o botão ocupar toda a largura
+        #     disponível da linha.
         btnCadastrar.grid(
             row=3,
             column=0,
             columnspan=2,
             padx=6,
             pady=6,
-            sticky="w"
+            sticky="ew"
         )
 
-        # Cria o botão responsável por excluir
-        # o evento atualmente selecionado na tabela.
+        # Cria um botão responsável por excluir
+        # um evento no banco de dados e na tabela.
         #
-        # Ao clicar no botão, o método
-        # self.excluiEvento() será executado.
+        # text:
+        #     Texto exibido ao usuário.
         #
-        # Normalmente o sistema utiliza o ID do evento
-        # armazenado em self.varIdSelecionado para localizar
-        # o registro correto no banco de dados.
+        # command=self.excluiEvento:
+        #     Executa o método responsável por remover
+        #     o evento atualmente selecionado na tabela.
         btnExcluir = ttk.Button(
             frameFormulario,
             text="Excluir (evento selecionado)",
             command=self.excluiEvento
+
         )
 
+        # Posiciona o botão de excluir.
+        #
+        # row=4:
+        #     Quinta linha da grade.
+        #
+        # columnspan=2:
+        #     Faz o botão ocupar as duas colunas
+        #     do formulário.
+        #
+        # sticky="ew":
+        #     Faz o botão ocupar toda a largura
+        #     disponível da linha.
         btnExcluir.grid(
             row=4,
             column=0,
@@ -579,18 +933,34 @@ class AppFiltroEntreDatas(tk.Tk):
             sticky="ew"
         )
 
-        # Cria o botão responsável por alterar
-        # os dados do evento selecionado.
+        # Cria um botão responsável por alterar
+        # um evento selecionado no banco de dados
+        # e na tabela.
         #
-        # Os novos valores informados nos campos
-        # serão utilizados para atualizar o registro
-        # correspondente no banco de dados.
+        # text:
+        #     Texto exibido ao usuário.
+        #
+        # command=self.alteraEvento:
+        #     Executa o método responsável por atualizar
+        #     os dados do evento selecionado.
         btnAlterar = ttk.Button(
             frameFormulario,
             text="Alterar (evento selecionado)",
             command=self.alteraEvento
         )
 
+        # Posiciona o botão de cadastro.
+        #
+        # row=5:
+        #     Sexta linha da grade.
+        #
+        # columnspan=2:
+        #     Faz o botão ocupar as duas colunas
+        #     do formulário.
+        #
+        # sticky="ew":
+        #     Faz o botão ocupar toda a largura
+        #     disponível da linha.
         btnAlterar.grid(
             row=5,
             column=0,
@@ -600,45 +970,78 @@ class AppFiltroEntreDatas(tk.Tk):
             sticky="ew"
         )
 
-        # Cria o botão responsável por limpar
-        # todos os campos do formulário.
+        # Cria um botão responsável por limpar
+        # o formulário
         #
-        # Essa operação não remove dados do banco.
-        # Apenas limpa os campos da interface,
-        # permitindo um novo preenchimento.
+        # text:
+        #     Texto exibido ao usuário.
+        #
+        # command=self.limpaFormulario:
+        #     Executa o método responsável por limpar
+        #     o formulário
         btnLimparForm = ttk.Button(
             frameFormulario,
             text="Limpar Formulário",
             command=self.limpaFormulario
         )
 
+        # Posiciona o botão de limpar formulário.
+        #
+        # row=6:
+        #     Sétima linha da grade.
+        #
+        # columnspan=2:
+        #     Faz o botão ocupar as duas colunas
+        #     do formulário.
+        #
+        # sticky="ew":
+        #     Faz o botão ocupar toda a largura
+        #     disponível da linha.
         btnLimparForm.grid(
             row=6,
             column=0,
+            columnspan=2,
             padx=6,
             pady=(6, 10),
             sticky="ew"
         )
 
-        # Exibe uma mensagem de orientação para o usuário.
+        # Cria um rótulo contendo uma mensagem de orientação
+        # para o usuário sobre o formato correto das datas.
         #
-        # Essa informação indica qual formato deve ser
-        # utilizado ao informar datas no sistema.
+        # text:
+        #     Texto que será exibido na tela.
         #
-        # Exemplo válido:
-        # 15/06/2026
-        #
-        # Exemplo inválido:
-        # 2026-06-15
+        # foreground="#2C302E":
+        #     Define a cor do texto utilizando um código hexadecimal.
+        #     Essa configuração é apenas visual e não altera
+        #     o funcionamento do sistema.
+
         ttk.Label(
             frameFormulario,
             text="Obs: Use o formato de dd/mm/aaaa.",
             foreground="#2C302E"
         ).grid(
+
+            # O rótulo será exibido na oitava linha da grade.
             row=7,
+
+            # Inicia na primeira coluna da grade.
             column=0,
+
+            # Faz o componente ocupar duas colunas da grade.
+            # Como o formulário possui os componentes distribuídos
+            # entre as colunas 0 e 1, essa configuração permite
+            # que a mensagem fique centralizada e utilize toda
+            # a largura disponível.
             columnspan=2,
+
+            # Espaçamento horizontal externo.
             padx=6,
+
+            # Espaçamento vertical externo.
+            #
+            # 0 pixels acima e 10 pixels abaixo da mensagem.
             pady=(0, 10)
         )
 
@@ -691,7 +1094,7 @@ class AppFiltroEntreDatas(tk.Tk):
         # date(2026, 6, 18) -> "18/06/2026"
         return d.strftime(formBR)
 
-    def atualizarEvento(self):
+    def atualizarTabelaEvento(self):
 
         # Obtém as datas informadas nos campos da tela
         # e converte os textos para objetos do tipo date.
@@ -714,31 +1117,41 @@ class AppFiltroEntreDatas(tk.Tk):
             )
             return
 
-        # Consulta os eventos no repositório utilizando
-        # os filtros informados pelo usuário.
+        # Solicita ao repositório a busca dos eventos cadastrados
+        # no banco de dados utilizando os filtros informados pelo usuário.
+        # O resultado será uma lista contendo apenas os registros
+        # que atendem aos critérios de pesquisa definidos.
         linhas = self.repo.listar(
             dataIni=dataInicio,
-            dataFinal=dataFinal,
+            dataFim=dataFinal,
             textoDesc=textoDescricao
         )
 
-        # Remove todos os registros atualmente exibidos
-        # na Treeview para evitar duplicações.
+        # Percorre todas as linhas atualmente exibidas na Treeview
+        # e as remove da tabela. Essa limpeza é necessária para
+        # evitar que os registros antigos permaneçam na tela ou
+        # sejam duplicados após uma nova consulta.
         for item in self.tree.get_children():
             self.tree.delete(item)
 
-        # Insere os eventos encontrados na Treeview.
+        # Percorre a lista de eventos retornada pelo repositório
+        # e adiciona cada registro na Treeview para exibição ao usuário.
         for evento in linhas:
+            # Insere uma nova linha na tabela contendo:
+            # - O ID do evento;
+            # - A data formatada no padrão brasileiro (dd/mm/aaaa);
+            # - A descrição do evento.
             self.tree.insert(
                 '',
                 tk.END,
                 values=(
                     evento.id,
-                    self.formatarBR(evento.dataEvento)
+                    self.formatarBR(evento.dataEvento),
+                    evento.descricao
                 )
             )
-
-        # Limpa a variável que armazena o identificador do evento selecionado.
+        # Limpa a variável que armazena o identificador do evento
+        # selecionado.
         self.varidSelecionado = None
 
     def limpaFiltro(self):
@@ -752,7 +1165,258 @@ class AppFiltroEntreDatas(tk.Tk):
         # Recarrega a tabela de eventos sem aplicar
         # nenhum critério de pesquisa, exibindo todos
         # os registros disponíveis.
-        self.atualizarEvento()
+        self.atualizarTabelaEvento()
+
+    # Obtém o evento selecionado na tabela e transfere
+    # suas informações para os campos do formulário.
+    # Dessa forma, o usuário pode visualizar, alterar
+    # ou excluir os dados do registro escolhido.
+    def capturaSelecao(self, _e=None):
+
+        # Obtém a linha atualmente selecionada na Treeview.
+        # O método selection() retorna o identificador interno
+        # da linha que foi clicada pelo usuário.
+        selecionado = self.tree.selection()
+
+        # Caso nenhuma linha esteja selecionada, não existe
+        # informação para carregar no formulário, então a
+        # execução do método é encerrada.
+        if not selecionado:
+            return
+
+        # Recupera os dados armazenados na linha selecionada.
+        # O resultado será uma sequência contendo os valores
+        # exibidos nas colunas da tabela, como ID, data e descrição.
+        valores = self.tree.item(selecionado[0], "values")
+
+        # Garante que a linha selecionada realmente possui dados.
+        # Essa verificação evita erros caso a linha esteja vazia
+        # ou ocorra algum problema ao recuperar as informações.
+        if not valores:
+            return
+
+        # Obtém o ID do evento e o converte para inteiro.
+        # Esse valor é armazenado para que o sistema saiba
+        # exatamente qual registro deverá ser alterado ou
+        # excluído quando o usuário clicar nos botões.
+        self.idSelecionado = int(valores[0])
+
+        # Copia a data do evento selecionado para o campo
+        # de data do formulário, permitindo sua visualização
+        # ou edição pelo usuário.
+        self.varData.set(valores[1])
+
+        # Copia a descrição do evento selecionado para o
+        # campo de descrição do formulário.
+        self.varDesc.set(valores[2])
+
+    # Verifica se os dados obrigatórios do formulário
+    # foram preenchidos corretamente antes de realizar
+    # operações de cadastro ou atualização.
+    #
+    # Retorna uma tupla contendo:
+    # - True e a data convertida, quando a validação
+    #   for concluída com sucesso;
+    # - False e None, quando existir algum erro nos
+    #   dados informados pelo usuário.
+    def validaFormulario(self) -> tuple[bool, date | None]:
+
+        # Obtém o texto informado no campo de descrição e
+        # remove possíveis espaços em branco digitados
+        # no início ou no final do conteúdo.
+        descricao = self.varDesc.get().strip()
+
+        # Verifica se a descrição foi preenchida, pois
+        # esse campo é obrigatório para identificar o evento.
+        if not descricao:
+           # Exibe uma mensagem informando ao usuário que
+           # a descrição do evento deve ser preenchida.
+           messagebox.showwarning("Atenção!", "Informe a descrição do evento.")
+
+           # Interrompe a validação indicando que os dados
+           # informados não atendem aos requisitos necessários.
+           return False, None
+
+        # Converte a data digitada pelo usuário para um
+        # objeto do tipo date, permitindo sua validação
+        # e utilização em operações do sistema.
+        data = self.converterTextoParaData(self.varData.get())
+
+        # Verifica se a data informada é válida e se a
+        # conversão para o tipo date foi realizada com sucesso.
+        if data is None:
+            # Interrompe a validação devido à existência de
+            # erros nos dados informados pelo usuário.
+            return False, None
+
+        # Retorna a confirmação de que os dados foram
+        # validados com sucesso juntamente com a data convertida.
+        return True, data
+
+    def cadastraEvento(self):
+
+        # Valida os dados informados no formulário e
+        # obtém a data convertida para o tipo date.
+        ok, data = self.validaFormulario()
+
+        # Interrompe o cadastro caso existam erros nos
+        # dados informados pelo usuário.
+        if not ok:
+            return
+
+        # Tenta realizar o cadastro do evento no banco de dados.
+        try:
+            # Solicita ao repositório o cadastro do evento no banco
+            # de dados utilizando a descrição e a data informadas.
+            # Após a inserção, o método retorna o ID gerado para o
+            # novo registro, que é armazenado na variável novoId.
+            novoId = self.repo.inserir(self.varDesc.get().strip(), data)
+
+            # Apresenta uma mensagem de confirmação ao usuário,
+            # informando que o evento foi cadastrado com sucesso
+            # e exibindo o ID gerado para o novo registro.
+            messagebox.showinfo("Sucesso!",
+                                f"Evento {novoId} inserido com sucesso!")
+
+            # Atualiza a tabela de eventos para exibir
+            # o registro recém-cadastrado.
+            self.atualizarTabelaEvento()
+            # Limpa os campos do formulário após a
+            # conclusão do cadastro.
+            self.limpaFormulario()
+
+        # Captura possíveis erros ocorridos durante
+        # o processo de cadastro do evento.
+        except Exception as e:
+            # Exibe ao usuário a descrição do erro
+            # ocorrido durante o cadastro.
+            messagebox.showerror("Erro ao cadastrar evento.", str(e))
+
+    def alteraEvento(self):
+
+        # Verifica se existe um evento selecionado,
+        # pois somente registros selecionados podem ser alterados.
+        if self.idSelecionado is None:
+            # Informa ao usuário que é necessário selecionar
+            # um evento antes de realizar a alteração.
+            messagebox.showwarning("Atenção!" ,
+                                   "Selecione um evento para alterar.")
+
+            # Interrompe a operação por não existir um registro selecionado.
+            return
+
+        # Valida os dados informados no formulário e
+        # obtém a data convertida para o tipo date.
+        ok, data = self.validaFormulario()
+
+        # Interrompe a alteração caso os dados informados sejam inválidos.
+        if not ok:
+            return
+
+        # Tenta executar a atualização do evento no banco de dados.
+        try:
+            # Atualiza no banco de dados o evento selecionado, utilizando os novos
+            # valores informados no formulário.
+            self.repo.atualizar(self.idSelecionado, self.varDesc.get().strip(), data)
+
+            # Informa ao usuário que a atualização foi realizada com sucesso.
+            messagebox.showinfo("Sucesso!",
+                                f"Evento {self.idSelecionado} atualizado com sucesso!")
+
+            # Atualiza a tabela para exibir os dados mais recentes do evento alterado.
+            self.atualizarTabelaEvento()
+
+            # Limpa os campos do formulário após a conclusão da atualização.
+            self.limpaFormulario()
+
+
+
+        # Captura possíveis erros ocorridos durante o processo de atualização do evento.
+        except Exception as e:
+            # Exibe ao usuário informações sobre o erro ocorrido
+            # durante a atualização do registro.
+            messagebox.showerror("Erro ao atualizar!" , str(e))
+
+    # Realiza a exclusão do evento selecionado.
+    def excluiEvento(self):
+
+        # Verifica se existe um evento selecionado na tabela.
+        # Caso nenhum registro tenha sido escolhido pelo usuário,
+        # não é possível saber qual evento deve ser excluído.
+        if self.idSelecionado is None:
+            # Exibe uma mensagem solicitando que o usuário
+            # selecione um evento antes de continuar.
+            messagebox.showwarning(
+                "Atenção!",
+                "Selecione um evento para excluir."
+            )
+
+            # Encerra a execução do método.
+            return
+
+        # Solicita uma confirmação antes de remover o evento.
+        # O método askyesno() retorna:
+        # True  -> quando o usuário clica em "Sim"
+        # False -> quando o usuário clica em "Não"
+        #
+        # O operador "not" inverte o resultado.
+        # Portanto, se o usuário NÃO confirmar a exclusão,
+        # a operação é cancelada.
+        if not messagebox.askyesno(
+                "Confirmação",
+                f"Excluir evento (ID: {self.idSelecionado})?"
+        ):
+            return
+
+        try:
+
+            # Solicita ao repositório a remoção do evento
+            # correspondente ao ID selecionado.
+            self.repo.excluir(self.idSelecionado)
+
+            # Informa ao usuário que a exclusão foi realizada
+            # com sucesso.
+            messagebox.showinfo(
+                "Sucesso!",
+                f"Evento {self.idSelecionado} excluído com sucesso!"
+            )
+
+            # Atualiza a tabela para remover da visualização
+            # o evento que acabou de ser excluído.
+            self.atualizarTabelaEvento()
+
+            # Limpa os campos do formulário e remove a
+            # referência ao evento anteriormente selecionado.
+            self.limpaFormulario()
+
+        except Exception as e:
+
+            # Captura qualquer erro ocorrido durante o
+            # processo de exclusão e exibe a mensagem
+            # correspondente ao usuário.
+            messagebox.showerror(
+                "Erro ao excluir evento!",
+                str(e)
+            )
+
+    # Limpa todos os campos do formulário e remove a referência ao
+    # evento atualmente selecionado, deixando a tela preparada
+    # para uma nova operação.
+    def limpaFormulario(self):
+
+        # Remove o ID do evento selecionado.
+        # Isso indica que nenhum registro está
+        # atualmente associado ao formulário.
+        self.idSelecionado = None
+
+        # Limpa o campo de descrição do evento.
+        self.varDesc.set("")
+
+        # Limpa o campo de data final.
+        self.varDataFim.set("")
+
+        # Limpa o campo de data do evento.
+        self.varData.set("")
 
 
 
