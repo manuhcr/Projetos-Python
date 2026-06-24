@@ -1,4 +1,3 @@
--- Dump gerado em 2026-06-22 20:14:09 --
 SET NAMES utf8mb4;
 CREATE DATABASE IF NOT EXISTS agendaDatasBrDb DEFAULT CHARACTER SET utf8mb4;
 USE agendaDatasBrDb;
@@ -29,7 +28,6 @@ INSERT INTO eventos(id, descricao, dataEvento) VALUES
 (9, 'Sprint BI - Sem. 2', '2030-02-24'),
 (10, 'Auditoria de Indicadores', '2030-03-12'),
 (11, 'Palestra: Boas Práticas SQL', '2030-03-25'),
-(12, 'Fechamento Q2', '2030-03-31'),
 (13, 'Oficina: Tkinter na Prática', '2030-04-08'),
 (14, 'Atualização KPIs Comercial', '2030-04-19'),
 (15, 'Revisão Meta Trimestral', '2030-04-30'),
