@@ -5,8 +5,6 @@ from typing import List, Optional  # Tipagem: define que algo pode ser uma Lista
 import os  # Biblioteca para mexer em pastas e arquivos do computador
 from datetime import datetime  # Biblioteca para pegar data e hora atual
 
-import params
-
 # Importações de outros arquivos do seu próprio projeto
 from configBanco import getConn, nameBench, wayExportSql  # Conexão, nome do banco e caminho do backup
 from modelos import Local  # A classe/modelo que representa uma cidade

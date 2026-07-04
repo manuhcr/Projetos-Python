@@ -143,7 +143,7 @@ class RepoProdutos:
 
     # Insere os produtos iniciais no banco
     # de dados caso a tabela esteja vazia.
-    def insercaoDeDadosSeVazio(self):
+    def inserirDadosSeVazio(self):
 
         # Verifica a quantidade de registros
         # existentes na tabela.
@@ -319,7 +319,7 @@ class RepoProdutos:
                         nomeProduto=linha["nomeProduto"],
                         precoProduto=float(linha["precoProduto"]),
                         estoque=int(linha["estoque"]),
-                        criadoEm=linha["criadoEm"]
+                        dataProduto=linha["dataProduto"]
                     )
                     for linha in linhas
                 ]
@@ -418,7 +418,7 @@ class RepoProdutos:
                         nomeProduto = %s,
                         precoProduto = %s,
                         estoque = %s,
-                        criadoEm = %s
+                        dataProduto = %s
                     WHERE idProduto = %s
                     """,
                     (

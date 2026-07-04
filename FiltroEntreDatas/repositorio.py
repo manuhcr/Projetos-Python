@@ -12,7 +12,7 @@ from datetime import date, datetime
 import os
 
 # Importa o caminho onde os arquivos de backup SQL serão armazenados.
-from FiltroEntreDatas.configBanco import caminhoExportarSQL
+from configBanco import caminhoExportarSQL
 
 # Importa a função responsável pela conexão com o banco
 # e as configurações utilizadas na conexão.

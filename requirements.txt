@@ -1,0 +1,9 @@
+# Dependências dos projetos. Instale todas de uma vez com:
+#   pip install -r requirements.txt
+
+# Conecta o Python ao MySQL. Usada por TODOS os projetos.
+pymysql
+
+# Cria/exporta planilhas Excel (.xlsx).
+# Usada apenas pelo projeto Sistema-de-Cadastros (botão "Exportar para Excel").
+openpyxl

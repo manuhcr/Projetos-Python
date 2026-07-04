@@ -2,3 +2,11 @@
 __pycache__/
 *.pyc
 venv/
+
+# Arquivo de variáveis de ambiente (credenciais do banco, etc.).
+# NUNCA deve ir para o git — cada máquina tem o seu.
+.env
+
+# Backups .sql gerados automaticamente pelos projetos (arquivos de saída,
+# não código-fonte). Ficam na pasta SQLDump/ e não precisam ir para o git.
+SQLDump/*.sql

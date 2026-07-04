@@ -117,10 +117,9 @@ def parsePrecoBR(string: str) -> float:
     # "1.234,56" -> "1234.56"
     # "15,90"    -> "15.90"
     texto = texto.replace(".", "").replace(",", ".")
-    return float(texto)
 
-    # Converte o texto em um número decimal
-    # e retorna esse valor.
+    # Converte o texto (já no formato americano) em um número
+    # decimal e retorna esse valor.
     return float(texto)
 
 # Converte uma data para o formato brasileiro.
@@ -1249,6 +1248,69 @@ class appAgrupamentoDeColunas(tk.Tk):
             text=f"{len(self.dados)} linha(s) | "
                  f"Soma total: {formataMoedaBR(soma)}"
         )
+
+    # Chamado automaticamente toda vez que o usuário
+    # seleciona uma linha da tabela.
+    #
+    # Este método está ligado ao evento "<<TreeviewSelect>>"
+    # lá no montaUI(). Ele tem duas tarefas:
+    #
+    # 1. Guardar o ID da venda selecionada em self.idSelecionado
+    #    (é esse ID que os botões Alterar e Excluir utilizam).
+    #
+    # 2. Preencher o formulário da direita com os dados dessa
+    #    venda, permitindo que o usuário edite os valores.
+    #
+    # O parâmetro "event" é enviado automaticamente pelo Tkinter
+    # quando o evento acontece. Ele não é usado aqui, por isso
+    # recebe o valor padrão None (assim o método também pode ser
+    # chamado manualmente, sem evento, se necessário).
+    def capturaSelecao(self, event=None):
+
+        # selection() retorna uma tupla com os identificadores
+        # (iid) das linhas selecionadas. Como a tabela permite
+        # selecionar apenas uma linha (selectmode="browse"),
+        # essa tupla terá no máximo um item.
+        selecao = self.tree.selection()
+
+        # Se nada estiver selecionado (tupla vazia), não há
+        # o que fazer: encerra o método.
+        if not selecao:
+            return
+
+        # Cada linha foi inserida com iid=str(valor.id) no
+        # populaTabela(). Ou seja, o identificador da linha É
+        # o ID da venda. Convertemos de texto para inteiro.
+        self.idSelecionado = int(selecao[0])
+
+        # Procura, na lista já carregada em memória (self.dados),
+        # o objeto Venda cujo id é igual ao selecionado.
+        #
+        # next(...) devolve o primeiro que combinar; se nenhum
+        # combinar, devolve None (o segundo argumento).
+        venda = next(
+            (v for v in self.dados if v.id == self.idSelecionado),
+            None
+        )
+
+        # Segurança: se por algum motivo a venda não for
+        # encontrada, não preenche o formulário.
+        if venda is None:
+            return
+
+        # Preenche cada campo do formulário com o valor da venda.
+        #
+        # Observação: ao alterar varQuantidade e varPrecoUnit,
+        # os "traces" definidos no montaUI() disparam sozinhos
+        # o recalculaTotal(), então o "Preço Total" é atualizado
+        # automaticamente, sem precisarmos chamá-lo aqui.
+        self.varNomeCliente.set(venda.nomeCliente)
+        self.varCidade.set(venda.cidade)
+        self.varSetor.set(venda.setor)
+        self.varProduto.set(venda.produto)
+        self.varQuantidade.set(str(venda.quantidade))
+        self.varPrecoUnit.set(formataMoedaBR(venda.precoUnitario))
+        self.varData.set(formataDataBR(venda.dataVenda))
 
     # Expande ou recolhe as colunas
     # referentes aos dados do cliente.

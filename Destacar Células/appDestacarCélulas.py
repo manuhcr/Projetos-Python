@@ -79,16 +79,18 @@ def formatarMoedaBR(valor: float) -> str:
     # casas decimais.
     string = f"{valor:.2f}"
 
-    # Troca os separadores para
-    # o padrão brasileiro.
+    # Troca os separadores para o padrão brasileiro.
     #
     # "." → separador de milhares
     # "," → separador decimal
-    return (
-        f"R$ {string.replace(',', 'x')
-                  .replace('.', ',')
-                  .replace('x', '.')}"
-    )
+    #
+    # As trocas são feitas numa variável ANTES de montar o texto.
+    # Motivo: colocar a cadeia de .replace() quebrada em várias
+    # linhas DENTRO da f-string gera erro de sintaxe, porque uma
+    # f-string de aspas simples não pode conter quebras de linha.
+    string = string.replace(',', 'x').replace('.', ',').replace('x', '.')
+
+    return f"R$ {string}"
 
 
 # Converte um preço digitado pelo
@@ -255,7 +257,7 @@ class appDestacarCelulas(tk.Tk):
         #
         # Cada posição dessa lista
         # contém um objeto Produto.
-        self.dadosLista: List[Produto] = []
+        self.dados: List[Produto] = []
 
         # Dicionário utilizado para localizar
         # rapidamente um produto através
@@ -373,6 +375,11 @@ class appDestacarCelulas(tk.Tk):
         estilo.configure("Treeview.Heading", font=("Jost", 11, "bold"))
         estilo.configure("Big.TButton", padding = (10,6))
         estilo.configure("Form.TEntry", padding = 4)
+
+        # Estilo dos botões do formulário. Um estilo de botão no ttk
+        # PRECISA terminar em ".TButton" para ser reconhecido — por
+        # isso "Form.TButton" (terminar só em ".Button" não funciona).
+        estilo.configure("Form.TButton", padding=(8, 5))
 
     def montarEstilo(self):
 
@@ -952,7 +959,7 @@ class appDestacarCelulas(tk.Tk):
         # a linha atualmente selecionada.
         self.tree.tag_configure(
             "rowSel",
-            background=self.corLinhaSel
+            background=self.corLinhaBG
         )
 
         # ----------------------------------------------------
@@ -980,7 +987,7 @@ class appDestacarCelulas(tk.Tk):
         # evento sempre que a seleção muda.
         self.tree.bind(
             "<<TreeviewSelect>>",
-            self.onSelectRow
+            self.onSelectedRow
         )
 
         # <Configure> acontece sempre que a
@@ -1254,7 +1261,7 @@ class appDestacarCelulas(tk.Tk):
         ttk.Button(
             formulario,
             text="Cadastrar produto",
-            style="Form.Button",
+            style="Form.TButton",
             command=self.cadastrarProduto
         ).grid(
             row=r,
@@ -1271,7 +1278,7 @@ class appDestacarCelulas(tk.Tk):
         ttk.Button(
             formulario,
             text="Alterar produto (linha selecionada)",
-            style="Form.Button",
+            style="Form.TButton",
             command=self.alterarProduto
         ).grid(
             row=r,
@@ -1289,7 +1296,7 @@ class appDestacarCelulas(tk.Tk):
         ttk.Button(
             formulario,
             text="Excluir produto (linha selecionada)",
-            style="Form.Button",
+            style="Form.TButton",
             command=self.excluirProduto
         ).grid(
             row=r,
@@ -1307,7 +1314,7 @@ class appDestacarCelulas(tk.Tk):
         ttk.Button(
             formulario,
             text="Limpar formulário",
-            style="Form.Button",
+            style="Form.TButton",
             command=self.limparFormulario
         ).grid(
             row=r,
@@ -1824,7 +1831,7 @@ class appDestacarCelulas(tk.Tk):
     # Como cada linha da Treeview pode
     # possuir várias tags ao mesmo tempo,
     # este método garante que apenas uma
-    # delas tenha a tag "linhaSelecionada".
+    # delas tenha a tag "rowSel".
     #
     # Assim, sempre existirá apenas uma
     # linha destacada na tabela.
@@ -1834,7 +1841,7 @@ class appDestacarCelulas(tk.Tk):
         #
         # O objetivo é procurar se alguma
         # delas ainda possui a tag
-        # "linhaSelecionada".
+        # "rowSel".
         for iid in self.tree.get_children():
 
             # Obtém a lista de tags
@@ -1846,7 +1853,7 @@ class appDestacarCelulas(tk.Tk):
             #
             # ou
             #
-            # ["oddrow", "linhaSelecionada"]
+            # ["oddrow", "rowSel"]
             tags = list(
                 self.tree.item(
                     iid,
@@ -1856,11 +1863,11 @@ class appDestacarCelulas(tk.Tk):
 
             # Verifica se essa linha
             # está destacada.
-            if "linhaSelecionada" in tags:
+            if "rowSel" in tags:
                 # Remove a tag responsável
                 # pelo destaque.
                 tags.remove(
-                    "linhaSelecionada"
+                    "rowSel"
                 )
 
                 # Atualiza as tags da linha.
@@ -1884,11 +1891,11 @@ class appDestacarCelulas(tk.Tk):
 
         # Caso essa linha ainda não esteja
         # destacada...
-        if "linhaSelecionada" not in tags:
+        if "rowSel" not in tags:
             # Adiciona a tag responsável
             # pelodest aque.
             tags.append(
-                "linhaSelecionada"
+                "rowSel"
             )
 
         # Atualiza as tags da linha,
@@ -1897,6 +1904,313 @@ class appDestacarCelulas(tk.Tk):
             rowId,
             tags=tuple(tags)
         )
+
+    # Desenha o destaque da coluna, da linha e da célula
+    # selecionadas, usando o Canvas transparente (self.overlay)
+    # que fica POR CIMA da Treeview.
+    #
+    # É chamado sempre que:
+    # • o usuário clica numa célula (onClick / onSelectedRow);
+    # • a tabela muda de tamanho (<Configure>);
+    # • a tabela é rolada (roda do mouse / barras).
+    #
+    # Assim o destaque acompanha a tabela e nunca fica
+    # "desalinhado" da célula que ele deveria marcar.
+    def desenharColuna(self):
+
+        # Se ainda não há coluna OU linha selecionada, não há
+        # o que destacar: esconde o Canvas e encerra.
+        if not self.colunaSelecionada or not self.itemSelecionado:
+            self.overlay.place_forget()
+            return
+
+        # bbox() devolve a área (x, y, largura, altura) de UMA célula
+        # dentro da Treeview.
+        #
+        # Devolve "" (vazio) quando a célula não está visível — por
+        # exemplo, quando foi rolada para fora da tela. Nesse caso,
+        # escondemos o destaque para não desenhar num lugar errado.
+        caixa = self.tree.bbox(
+            self.itemSelecionado,
+            self.colunaSelecionada
+        )
+        if not caixa:
+            self.overlay.place_forget()
+            return
+
+        # Desempacota a área da célula em 4 variáveis.
+        x, y, larg, alt = caixa
+
+        # Faz o Canvas cobrir TODA a Treeview e o traz para a frente,
+        # garantindo que o destaque fique visível sobre a tabela.
+        self.overlay.place(
+            x=0,
+            y=0,
+            relwidth=1,
+            relheight=1
+        )
+        self.overlay.lift()
+
+        # Limpa o desenho anterior. Sem isso, cada clique deixaria
+        # o destaque antigo acumulado por baixo do novo.
+        self.overlay.delete("all")
+
+        # Dimensões atuais da Treeview (para desenhar a coluna com a
+        # altura toda e a linha com a largura toda).
+        alturaTree = self.tree.winfo_height()
+        larguraTree = self.tree.winfo_width()
+
+        # stipple="gray25"/"gray50" cria um preenchimento "furadinho"
+        # (semitransparente), deixando o texto da célula continuar
+        # legível por baixo do destaque.
+
+        # 1) A COLUNA inteira: mesma faixa horizontal da célula (x até
+        #    x+larg), da altura toda da tabela (0 até alturaTree).
+        self.overlay.create_rectangle(
+            x, 0, x + larg, alturaTree,
+            fill=self.corColunaBG,
+            outline="",
+            stipple="gray25"
+        )
+
+        # 2) A LINHA inteira: mesma faixa vertical da célula (y até
+        #    y+alt), da largura toda da tabela (0 até larguraTree).
+        self.overlay.create_rectangle(
+            0, y, larguraTree, y + alt,
+            fill=self.corLinhaBG,
+            outline="",
+            stipple="gray25"
+        )
+
+        # 3) A CÉLULA (interseção da linha com a coluna): destaque
+        #    um pouco mais forte, para marcar exatamente onde clicou.
+        self.overlay.create_rectangle(
+            x, y, x + larg, y + alt,
+            fill=self.corCelulaBG,
+            outline="",
+            stipple="gray50"
+        )
+
+    # ----------------------------------------------------
+    # ROLAGEM (barras <-> tabela) + redesenho do destaque
+    # ----------------------------------------------------
+    #
+    # A Treeview e as barras de rolagem ficam sincronizadas
+    # nos DOIS sentidos:
+    #
+    # • ysync / xsync    -> a TABELA avisa a barra "rolei até aqui".
+    # • onVScroll / onHScroll -> a BARRA manda a tabela rolar.
+    #
+    # Em todos os casos chamamos desenharColuna() no final, para
+    # o destaque (Canvas) acompanhar a rolagem e não ficar torto.
+
+    # Chamado pela Treeview quando ela rola na VERTICAL
+    # (via yscrollcommand). Recebe a faixa visível (início, fim).
+    def ysync(self, primeiro, ultimo):
+        self.barraScrollVertical.set(primeiro, ultimo)
+        self.desenharColuna()
+
+    # Chamado pela Treeview quando ela rola na HORIZONTAL
+    # (via xscrollcommand).
+    def xsync(self, primeiro, ultimo):
+        self.barraScrollHorizontal.set(primeiro, ultimo)
+        self.desenharColuna()
+
+    # Chamado quando o usuário arrasta a barra VERTICAL
+    # (via command da Scrollbar). O *args recebe os argumentos
+    # que o Tkinter envia (ex: "moveto", "0.5") e os repassa
+    # como estão para a tabela rolar.
+    def onVScroll(self, *args):
+        self.tree.yview(*args)
+        self.desenharColuna()
+
+    # Chamado quando o usuário arrasta a barra HORIZONTAL.
+    def onHScroll(self, *args):
+        self.tree.xview(*args)
+        self.desenharColuna()
+
+    # ----------------------------------------------------
+    # FORMULÁRIO (preencher / validar / limpar)
+    # ----------------------------------------------------
+
+    # Preenche os campos do formulário com os dados do produto
+    # cuja linha foi selecionada. O rowId é o iid da linha, que
+    # neste projeto é o próprio id do produto em texto.
+    def preencherFormPorIid(self, rowId: str):
+        # mapearIdProd liga o id (texto) ao objeto Produto.
+        prod = self.mapearIdProd.get(rowId)
+        if prod is None:
+            return
+
+        self.varCategoriaProduto.set(prod.categoriaProduto)
+        self.varNomeProduto.set(prod.nomeProduto)
+
+        # Preço SEM "R$", como número BR (ex: "1500,50"), para que
+        # o campo possa ser reconvertido em float na hora de alterar.
+        self.varPrecoProduto.set(
+            f"{prod.precoProduto:.2f}".replace(".", ",")
+        )
+        self.varEstoque.set(str(prod.estoque))
+        self.varDataProduto.set(formatarDataBR(prod.dataProduto))
+
+    # Lê os campos do formulário, valida e devolve a tupla
+    # (categoria, nome, preco, estoque, data).
+    #
+    # Se algo estiver inválido, levanta ValueError com uma
+    # mensagem amigável. Assim, cadastrar e alterar reaproveitam
+    # a MESMA validação, sem duplicar código.
+    def lerEValidarFormulario(self):
+        categoria = self.varCategoriaProduto.get().strip()
+        nome = self.varNomeProduto.get().strip()
+        if not categoria or not nome:
+            raise ValueError("Informe a categoria e o nome do produto.")
+
+        # converterPrecoBR já levanta ValueError se estiver vazio.
+        preco = converterPrecoBR(self.varPrecoProduto.get())
+        if preco <= 0:
+            raise ValueError("O preço deve ser maior que zero.")
+
+        # isdigit() garante um número inteiro não negativo.
+        estoqueTexto = self.varEstoque.get().strip()
+        if not estoqueTexto.isdigit():
+            raise ValueError("O estoque deve ser um número inteiro (0 ou mais).")
+        estoque = int(estoqueTexto)
+
+        dataTexto = self.varDataProduto.get().strip()
+        if not dataTexto:
+            raise ValueError("Informe a data de criação (dd/mm/aaaa).")
+        try:
+            data = converterDataBR(dataTexto)
+        except ValueError:
+            raise ValueError("Data inválida. Use o formato dd/mm/aaaa.")
+
+        return categoria, nome, preco, estoque, data
+
+    # Limpa todos os campos do formulário, remove a seleção da
+    # tabela e esconde o destaque. Deixa a tela pronta para um
+    # novo cadastro.
+    def limparFormulario(self):
+        self.itemSelecionado = None
+        self.colunaSelecionada = None
+
+        self.varCategoriaProduto.set("")
+        self.varNomeProduto.set("")
+        self.varPrecoProduto.set("")
+        self.varEstoque.set("")
+        self.varDataProduto.set("")
+
+        # Remove a seleção atual da tabela, se houver.
+        selecao = self.tree.selection()
+        if selecao:
+            self.tree.selection_remove(selecao)
+
+        # Sem seleção, desenharColuna() apenas esconde o destaque.
+        self.desenharColuna()
+
+    # ----------------------------------------------------
+    # CRUD (Cadastrar / Alterar / Excluir)
+    # ----------------------------------------------------
+
+    # Cadastra um novo produto a partir do formulário.
+    def cadastrarProduto(self):
+        # 1) Valida os campos. Se algo estiver errado, avisa e sai.
+        try:
+            categoria, nome, preco, estoque, data = self.lerEValidarFormulario()
+        except ValueError as erro:
+            messagebox.showerror("Validação", str(erro))
+            return
+
+        # 2) Tenta inserir no banco e atualizar a tela.
+        try:
+            novoId = self.repo.inserirProduto(
+                categoria, nome, preco, estoque, data
+            )
+            messagebox.showinfo(
+                "Sucesso",
+                f"Produto cadastrado com sucesso (ID: {novoId})."
+            )
+            # Recarrega respeitando o filtro de busca atual.
+            self.carregarDados(self.varBusca.get().strip() or None)
+            self.popularTabela()
+            self.limparFormulario()
+        except Exception as erro:
+            messagebox.showerror("Erro ao cadastrar", str(erro))
+
+    # Altera o produto correspondente à linha selecionada.
+    def alterarProduto(self):
+        # Sem linha selecionada, não há o que alterar.
+        if not self.itemSelecionado:
+            messagebox.showwarning(
+                "Atenção",
+                "Selecione uma linha para alterar."
+            )
+            return
+
+        try:
+            categoria, nome, preco, estoque, data = self.lerEValidarFormulario()
+        except ValueError as erro:
+            messagebox.showerror("Validação", str(erro))
+            return
+
+        try:
+            # O iid da linha é o próprio id do produto.
+            self.repo.atualizarProduto(
+                int(self.itemSelecionado),
+                categoria, nome, preco, estoque, data
+            )
+            messagebox.showinfo(
+                "Sucesso",
+                f"Produto de ID {self.itemSelecionado} atualizado."
+            )
+            self.carregarDados(self.varBusca.get().strip() or None)
+            self.popularTabela()
+            self.limparFormulario()
+        except Exception as erro:
+            messagebox.showerror("Erro ao alterar", str(erro))
+
+    # Exclui o produto correspondente à linha selecionada.
+    def excluirProduto(self):
+        if not self.itemSelecionado:
+            messagebox.showwarning(
+                "Atenção",
+                "Selecione uma linha para excluir."
+            )
+            return
+
+        # Pede confirmação antes de apagar (ação irreversível).
+        if not messagebox.askyesno(
+            "Confirmação",
+            f"Deseja mesmo excluir o produto de ID {self.itemSelecionado}?"
+        ):
+            return
+
+        try:
+            self.repo.excluirProduto(int(self.itemSelecionado))
+            messagebox.showinfo(
+                "Sucesso",
+                f"Produto de ID {self.itemSelecionado} excluído."
+            )
+            self.carregarDados(self.varBusca.get().strip() or None)
+            self.popularTabela()
+            self.limparFormulario()
+        except Exception as erro:
+            messagebox.showerror("Erro ao excluir", str(erro))
+
+
+# ----------------------------------------------------
+# PONTO DE ENTRADA
+# ----------------------------------------------------
+#
+# Só executa quando este arquivo é rodado diretamente
+# (python appDestacarCélulas.py), e não quando é importado.
+if __name__ == "__main__":
+
+    # Cria a janela principal da aplicação.
+    app = appDestacarCelulas()
+
+    # Inicia o loop do Tkinter, mantendo a janela aberta e
+    # respondendo aos cliques e à digitação do usuário.
+    app.mainloop()
 
 
 

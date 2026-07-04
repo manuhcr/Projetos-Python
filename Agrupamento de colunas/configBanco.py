@@ -8,11 +8,15 @@
 # acessar, inserir, alterar ou excluir dados no banco
 import pymysql
 
+# Path (da biblioteca padrão pathlib) é usada para montar caminhos de arquivo
+# que funcionam em qualquer sistema operacional (Windows, Mac, Linux).
+from pathlib import Path
+
 # Usuário utilizado para acessar o servidor MySQL.
 usuario = 'root'
 
 # Senha do usuário configurado no banco de dados.
-senha = '$aluno123BD'
+senha = '$aluno123DB'
 
 # Endereço do servidor MySQL.
 # Como o banco está instalado na própria máquina,
@@ -27,11 +31,10 @@ nomeBanco = 'agrupamentoTabelasDB'
 
 # Diretório utilizado para armazenar arquivos
 # de exportação SQL (dump do banco).
-# O prefixo "r" indica uma string bruta (raw string),
-# fazendo com que as barras invertidas (\) sejam
-# interpretadas literalmente, algo muito útil para
-# representar caminhos de arquivos no Windows.
-caminhoExportarSQL = r'C:\Users\manoe\PycharmProjects\Projetos-Python\SQLDump'
+# Aponta para a pasta SQLDump/ na raiz do repositório, calculada de forma
+# relativa a ESTE arquivo (Path(__file__)). Assim funciona em qualquer
+# computador (Windows, Mac, Linux), sem caminho fixo de uma máquina específica.
+caminhoExportarSQL = str(Path(__file__).resolve().parent.parent / "SQLDump")
 
 # Função responsável por criar e retornar uma conexão
 # com o servidor MySQL.

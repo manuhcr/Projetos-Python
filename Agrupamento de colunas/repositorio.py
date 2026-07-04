@@ -181,7 +181,7 @@ class RepoVendas:
                 # pela aplicação.
                 cursor.execute(
                     """
-                    CREATE TABLE IF NOT EXISTS Vendas (
+                    CREATE TABLE IF NOT EXISTS vendas (
 
                         -- Identificador único da venda.
                         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -1016,24 +1016,28 @@ class RepoVendas:
             # A cada repetição, a variável "linha"
             # representa uma venda diferente.
             for linha in linhas:
-                # Substitui aspas simples por aspas duplas
-                # no nome do cliente.
+                # Escapa a aspa simples DUPLICANDO-A ('' em vez de ').
                 #
-                # Isso evita problemas na montagem dos
-                # comandos SQL do arquivo de backup.
-                nomeCliente = linha["nomeCliente"].replace("'", '"')
+                # Por quê? No SQL, textos ficam entre aspas simples:
+                # '...'. Se o próprio texto tiver uma aspa (ex: Sant'Ana),
+                # ela encerraria a string no lugar errado e quebraria o
+                # comando. A regra do SQL é: para representar UMA aspa
+                # dentro do texto, escrevemos DUAS ('').
+                #
+                # Exemplo: Sant'Ana  ->  'Sant''Ana'  (o banco lê Sant'Ana)
+                #
+                # OBS: NÃO trocamos a aspa por aspa dupla ("), pois isso
+                # mudaria o dado em si (corromperia o nome no backup).
+                nomeCliente = linha["nomeCliente"].replace("'", "''")
 
-                # Substitui aspas simples por aspas duplas
-                # no nome da cidade.
-                cidade = linha["cidade"].replace("'", '"')
+                # Mesmo escape para a cidade.
+                cidade = linha["cidade"].replace("'", "''")
 
-                # Substitui aspas simples por aspas duplas
-                # no nome do setor.
-                setor = linha["setor"].replace("'", '"')
+                # Mesmo escape para o setor.
+                setor = linha["setor"].replace("'", "''")
 
-                # Substitui aspas simples por aspas duplas
-                # no nome do produto.
-                produto = linha["produto"].replace("'", '"')
+                # Mesmo escape para o produto.
+                produto = linha["produto"].replace("'", "''")
 
                 # Monta uma linha do comando INSERT contendo
                 # os dados da venda atual.
